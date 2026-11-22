@@ -1,0 +1,56 @@
+spring:
+  application:
+    name: hotel-booking
+  datasource:
+    # LOCK_TIMEOUT: how long a transaction waits for a row lock held by another booking/payment.
+    url: jdbc:h2:mem:hotelbooking;DB_CLOSE_DELAY=-1;LOCK_TIMEOUT=10000
+    username: sa
+    password: ""
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        default_batch_fetch_size: 50
+        jdbc:
+          batch_size: 100
+        order_inserts: true
+        order_updates: true
+  h2:
+    console:
+      enabled: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+hotel:
+  # All properties are assumed to be in one time zone. Dates, check-in times and hold expiry use it.
+  time-zone: Asia/Kolkata
+  inventory:
+    horizon-days: 365
+  booking:
+    hold-duration: PT15M
+    max-nights: 30
+    max-rooms-per-booking: 5
+    check-in-time: "14:00"
+    expiry-job:
+      enabled: true
+      interval: PT30S
+  payment:
+    mock:
+      # Instrument tokens the mock gateway declines. Card number, UPI VPA, or WALLET_PROVIDER:walletId.
+      declined-instruments:
+        - "4000000000000002"
+        - "fail@upi"
+        - "PAYTM:declined-wallet"
+  demo-data:
+    enabled: true
+
+logging:
+  pattern:
+    # Puts the request id set by RequestLoggingFilter on every log line, e.g. [3f2a...]. Empty for background jobs.
+    correlation: "[%X{requestId:-}] "
+  level:
+    com.hotelbooking: INFO
